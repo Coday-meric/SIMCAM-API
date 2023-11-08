@@ -23,7 +23,7 @@ def rec_video(name):
     file_source = '/api/rec_tmp/' + file_name
 
     # Démarrage VLC
-    cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o test.mp4 --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 3000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default'
+    cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + file_source + ' --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 3000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default'
     process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
     pid = os.getpgid(process.pid)
 
