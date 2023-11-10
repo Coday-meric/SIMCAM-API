@@ -2,8 +2,8 @@
 
 
 #Dossier de base
-dir=/api/rec_tmp
-dir_timestamp=/api/var_tmp
+dir=/simcam/data/temp
+dir_timestamp=/simcam/data/temp_var
 filename="$dir_timestamp/timestamp.txt"
 date_log=$(date '+%d/%m/%Y %r')
 
