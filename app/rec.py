@@ -74,7 +74,7 @@ def unrec_video():
     f.close()
 
     try:
-        os.killpg(pid, signal.SIGTERM)
+        os.killpg(pid, signal.SIGINT)
     except ProcessLookupError:
         pass
 
