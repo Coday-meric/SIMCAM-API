@@ -19,7 +19,7 @@ def rec_video(name):
     path.mkdir(parents=True, exist_ok=True)
 
     # Nom fichier
-    file_name = name + ' ' + jour + '.mp4'
+    file_name = name + ' ' + jour + '-quality.mp4'
     file_source = '/api/rec_tmp/' + file_name
 
     # Démarrage VLC
