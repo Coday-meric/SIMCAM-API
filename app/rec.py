@@ -15,19 +15,19 @@ def rec_video(name):
     jour = timestamp.strftime('%d-%m-%y %Hh%M')
 
     # Création dossier
-    path = Path('/api/rec_tmp/')
+    path = Path('/simcam/data/temp/')
     path.mkdir(parents=True, exist_ok=True)
 
     # Nom fichier
     file_name = name + ' ' + jour + '-quality.mp4'
-    file_source = '/api/rec_tmp/' + file_name
+    file_source = '/simcam/data/temp/' + file_name
 
     # Démarrage VLC
     cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + file_source + ' --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 3000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default'
     process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
     pid = os.getpgid(process.pid)
 
-    f = open('/api/var_tmp/out.ser', "wb")
+    f = open('/simcam/data/temp_var/out.ser', "wb")
     pickler = pickle.Pickler(f, pickle.HIGHEST_PROTOCOL)
     pickler.dump(pid)
     pickler.dump(file_source)
@@ -37,7 +37,7 @@ def rec_video(name):
     # Vérification du démarrage de l'enregistrement
 
     # Mise en BDD
-    con = sqlite3.connect("/api/bdd/rec_bdd.db")
+    con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
     cur = con.cursor()
 
     cur.execute('''CREATE TABLE IF NOT EXISTS rec(
@@ -64,9 +64,9 @@ def unrec_video():
     annee = timestamp.strftime('%Y')
     semaine = timestamp.strftime('%V le %m.%y')
 
-    con = sqlite3.connect("/api/bdd/rec_bdd.db")
+    con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
     cur = con.cursor()
-    f = open('/api/var_tmp/out.ser', "rb")
+    f = open('/simcam/data/temp_var/out.ser', "rb")
 
     unpickler = pickle.Unpickler(f)
     pid = unpickler.load()
@@ -120,7 +120,7 @@ def unrec_video():
 
 
 def status_rec():
-    con = sqlite3.connect("/api/bdd/rec_bdd.db")
+    con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
     cur = con.cursor()
     cur.execute('''CREATE TABLE IF NOT EXISTS rec(
             id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -147,7 +147,7 @@ def status_rec():
 
 
 def info_rec(rec_id):
-    con = sqlite3.connect("/api/bdd/rec_bdd.db")
+    con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
     cur = con.cursor()
     cur.execute("SELECT * FROM rec WHERE id = ?", (rec_id,))
     res = cur.fetchall()
@@ -166,7 +166,7 @@ def info_rec(rec_id):
 
 
 def upload_file():
-    cmd_upload = '/api/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
+    cmd_upload = '/simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
     script = subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
     script = "True"
     return script
