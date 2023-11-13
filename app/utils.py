@@ -27,7 +27,7 @@ def rec_video(name):
     process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
     pid = os.getpgid(process.pid)
 
-    f = open('/simcam/data/temp_var/out.ser', "wb")
+    f = open('/simcam/data/temp_var/out_rec.ser', "wb")
     pickler = pickle.Pickler(f, pickle.HIGHEST_PROTOCOL)
     pickler.dump(pid)
     pickler.dump(file_source)
@@ -66,7 +66,7 @@ def unrec_video():
 
     con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
     cur = con.cursor()
-    f = open('/simcam/data/temp_var/out.ser', "rb")
+    f = open('/simcam/data/temp_var/out_rec.ser', "rb")
 
     unpickler = pickle.Unpickler(f)
     pid = unpickler.load()
@@ -168,5 +168,31 @@ def info_rec(rec_id):
 def upload_file():
     cmd_upload = '/simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
     script = subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+    script = "True"
+    return script
+
+def run_preview():
+    cmdbase = 'libcamera-vid -t 0 --rotation 180 --width 1920 --height 1080 --codec h264 --inline --listen -o tcp://0.0.0.0:8888'
+    process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+    pid = os.getpgid(process.pid)
+    f = open('/simcam/data/temp_var/out_preview.ser', "wb")
+    pickler = pickle.Pickler(f, pickle.HIGHEST_PROTOCOL)
+    pickler.dump(pid)
+    f.close()
+
+    script = "True"
+    return script
+
+def stop_preview():
+    f = open('/simcam/data/temp_var/out_preview.ser', "rb")
+    unpickler = pickle.Unpickler(f)
+    pid = unpickler.load()
+    f.close()
+
+    try:
+        os.killpg(pid, signal.SIGINT)
+    except ProcessLookupError:
+        pass
+
     script = "True"
     return script
