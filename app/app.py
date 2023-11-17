@@ -10,12 +10,13 @@ class RunRecSession(object):
         name = data['name']
         r = Rec()
         res = r.rec_video(name)
-        if res[0] == True:
+        if res[0]:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"volunteer name": name})
         else:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"status": res[1]})
+
 
 class StopRecSession(object):
     def on_get(self, req, resp):
@@ -25,18 +26,21 @@ class StopRecSession(object):
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"path": path})
 
+
 class StatusRecSession(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Rec()
         status = r.status_rec()
-        if status[0] == True:
+        if status[0]:
             info = r.info_rec()
             resp.status = falcon.HTTP_200
-            resp.text = json.dumps({"pid": info[0], 'name': info[1], 'file': info[2], 'path': info[3], 'time': info[4], 'status': info[5]})
+            resp.text = json.dumps(
+                {"pid": info[0], 'name': info[1], 'file': info[2], 'path': info[3], 'time': info[4], 'status': info[5]})
         else:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"status": status})
+
 
 class UploadFile(object):
     def on_get(self, req, resp):
@@ -46,6 +50,7 @@ class UploadFile(object):
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
 
+
 class RunPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
@@ -54,6 +59,7 @@ class RunPreview(object):
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
 
+
 class StopPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
@@ -61,6 +67,7 @@ class StopPreview(object):
         status = r.stop_preview()
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
+
 
 # falcon.API instances are callable WSGI apps
 app = falcon.App()

@@ -31,7 +31,7 @@ class Rec:
         self.file_source = '/simcam/data/temp/' + self.file_name
 
         # Démarrage VLC
-        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 5000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 512000'
+        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --bitrate 2500000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
         # Stockage du PID
@@ -95,9 +95,8 @@ class Rec:
 class Upload:
     def upload_file(self):
         cmd_upload = '/simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
-        script = subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-        script = True
-        return script
+        subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+        return True
 
 
 class Preview:
@@ -110,8 +109,7 @@ class Preview:
                                    preexec_fn=os.setsid)
         self.pid = os.getpgid(process.pid)
 
-        script = True
-        return script
+        return True
 
     def stop_preview(self):
         try:
@@ -119,5 +117,4 @@ class Preview:
         except ProcessLookupError:
             pass
 
-        script = True
-        return script
+        return True
