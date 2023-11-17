@@ -32,7 +32,7 @@ class StatusRecSession(object):
         """Handles GET requests"""
         r = Rec()
         status = r.status_rec()
-        if status[0]:
+        if status:
             info = r.info_rec()
             resp.status = falcon.HTTP_200
             resp.text = json.dumps(
