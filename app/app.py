@@ -2,14 +2,16 @@ import json
 import falcon
 from utils import Upload, Rec, Preview
 
+rec = Rec()
+preview = Preview()
+upload = Upload()
 
 class RunRecSession(object):
     def on_post(self, req, resp):
         """Handles POST requests"""
         data = json.load(req.stream)
         name = data['name']
-        r = Rec()
-        res = r.rec_video(name)
+        res = rec.rec_video(name)
         if res[0]:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"volunteer name": name})
@@ -21,8 +23,7 @@ class RunRecSession(object):
 class StopRecSession(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
-        r = Rec()
-        path = r.unrec_video()
+        path = rec.unrec_video()
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"path": path})
 
@@ -30,10 +31,9 @@ class StopRecSession(object):
 class StatusRecSession(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
-        r = Rec()
-        status = r.status_rec()
+        status = rec.status_rec()
         if status:
-            info = r.info_rec()
+            info = rec.info_rec()
             resp.status = falcon.HTTP_200
             resp.text = json.dumps(
                 {"pid": info[0], 'name': info[1], 'file': info[2], 'path': info[3], 'time': info[4], 'status': info[5]})
@@ -45,8 +45,7 @@ class StatusRecSession(object):
 class UploadFile(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
-        r = Upload()
-        status = r.upload_file()
+        status = upload.upload_file()
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
 
@@ -54,8 +53,7 @@ class UploadFile(object):
 class RunPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
-        r = Preview()
-        status = r.run_preview()
+        status = preview.run_preview()
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
 
@@ -63,8 +61,7 @@ class RunPreview(object):
 class StopPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
-        r = Preview()
-        status = r.stop_preview()
+        status = preview.stop_preview()
         resp.status = falcon.HTTP_200  # This is the default status
         resp.text = json.dumps({"status": status})
 

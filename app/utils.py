@@ -40,7 +40,7 @@ class Rec:
         # Status d'enregistrement
         self.status = True
 
-        return True, self.pid
+        return self.status, self.pid
 
     def unrec_video(self):
         load_dotenv()
