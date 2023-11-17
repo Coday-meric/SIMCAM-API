@@ -62,15 +62,7 @@ class Rec:
         try:
             oc = owncloud.Client(url_nextcloud)
             oc.login(login, password)
-        except:
-            pass
-
-        try:
             oc.mkdir('Simon/Vidéos-Simon/' + annee + '')
-        except:
-            pass
-
-        try:
             oc.mkdir('Simon/Vidéos-Simon/' + annee + '/Semaine-' + semaine + '')
         except:
             pass
