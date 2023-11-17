@@ -12,28 +12,28 @@ class RunRecSession(object):
         res = r.rec_video(name)
         if res[0] == True:
             resp.status = falcon.HTTP_200  # This is the default status
-            resp.text = json.dumps({"Nom du Bénévole": name})
+            resp.text = json.dumps({"volunteer name": name})
         else:
             resp.status = falcon.HTTP_200  # This is the default status
-            resp.text = json.dumps({"state": res[1]})
+            resp.text = json.dumps({"status": res[1]})
 
 class StopRecSession(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Rec()
-        r.unrec_video()
+        path = r.unrec_video()
         resp.status = falcon.HTTP_200  # This is the default status
-        resp.text = json.dumps({"Path": r})
+        resp.text = json.dumps({"path": path})
 
 class StatusRecSession(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Rec()
         status = r.status_rec()
-        if status[0] == 'true':
-            info = r.info_rec(status[1])
+        if status[0] == True:
+            info = r.info_rec()
             resp.status = falcon.HTTP_200
-            resp.text = json.dumps({"id": info[0], 'name': info[1], 'file': info[2], 'time': info[3], 'status': info[4]})
+            resp.text = json.dumps({"pid": info[0], 'name': info[1], 'file': info[2], 'path': info[3], 'time': info[4], 'status': info[5]})
         else:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"status": status})
@@ -42,25 +42,25 @@ class UploadFile(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Upload()
-        state = r.upload_file()
+        status = r.upload_file()
         resp.status = falcon.HTTP_200  # This is the default status
-        resp.text = json.dumps({"Status": state})
+        resp.text = json.dumps({"status": status})
 
 class RunPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Preview()
-        state = r.run_preview()
+        status = r.run_preview()
         resp.status = falcon.HTTP_200  # This is the default status
-        resp.text = json.dumps({"Status": state})
+        resp.text = json.dumps({"status": status})
 
 class StopPreview(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         r = Preview()
-        state = r.stop_preview()
+        status = r.stop_preview()
         resp.status = falcon.HTTP_200  # This is the default status
-        resp.text = json.dumps({"Status": state})
+        resp.text = json.dumps({"status": status})
 
 # falcon.API instances are callable WSGI apps
 app = falcon.App()

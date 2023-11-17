@@ -1,23 +1,23 @@
 import datetime
 import os
-import pickle
 import signal
 import subprocess
 from pathlib import Path
-import sqlite3
 import owncloud
 
 
 class Rec:
     def __init__(self):
-        self.recording = False
+        self.status = False
         self.pid = None
         self.file_source = None
         self.file_name = None
+        self.name = None
+        self.time = None
 
     def rec_video(self, name):
         # Déclaration de variable
-        ts = datetime.datetime.now().timestamp()
+        self.time = datetime.datetime.now().timestamp()
         timestamp = datetime.datetime.now()
         jour = timestamp.strftime('%d-%m-%y_%Hh%M')
 
@@ -26,41 +26,21 @@ class Rec:
         path.mkdir(parents=True, exist_ok=True)
 
         # Nom fichier
-        file_name = name + '_' + jour + '-quality.mp4'
-        file_source = '/simcam/data/temp/' + file_name
+        self.name = name
+        self.file_name = self.name + '_' + jour + '-quality.mp4'
+        self.file_source = '/simcam/data/temp/' + self.file_name
 
         # Démarrage VLC
-        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + file_source + ' --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 5000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 512000'
+        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --level 4.2 --framerate 30 --width 1920 --height 1080 --bitrate 5000000 --mode 1920:1080 --profile high --denoise cdn_off -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 512000'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
-        pid = os.getpgid(process.pid)
+        # Stockage du PID
+        self.pid = os.getpgid(process.pid)
 
-        f = open('/simcam/data/temp_var/out_rec.ser', "wb")
-        pickler = pickle.Pickler(f, pickle.HIGHEST_PROTOCOL)
-        pickler.dump(pid)
-        pickler.dump(file_source)
-        pickler.dump(file_name)
-        f.close()
+        # Status d'enregistrement
+        self.status = True
 
-        # Vérification du démarrage de l'enregistrement
-
-        # Mise en BDD
-        con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
-        cur = con.cursor()
-
-        cur.execute('''CREATE TABLE IF NOT EXISTS rec(
-        id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-        name TEXT,
-        file TEXT,
-        time INTEGER,
-        status INTEGER
-        )''')
-        donnees = (name, file_name, ts, 1)
-        cur.execute("INSERT INTO rec (name, file, time, status) VALUES (?, ?, ?, ?)", donnees)
-        con.commit()
-        con.close()
-
-        return True, pid
+        return True, self.pid
 
     def unrec_video(self):
         login = 'Simon'
@@ -71,17 +51,8 @@ class Rec:
         annee = timestamp.strftime('%Y')
         semaine = timestamp.strftime('%V le %m.%y')
 
-        con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
-        cur = con.cursor()
-        f = open('/simcam/data/temp_var/out_rec.ser', "rb")
-
-        unpickler = pickle.Unpickler(f)
-        pid = unpickler.load()
-        file_source = unpickler.load()
-        f.close()
-
         try:
-            os.killpg(pid, signal.SIGINT)
+            os.killpg(self.pid, signal.SIGINT)
         except ProcessLookupError:
             pass
 
@@ -105,102 +76,48 @@ class Rec:
         # Pour une utilisation de la library python
         # oc.drop_file('/home/aymeric/Codage/AEVE-REC-API/app/test.txt')
 
-        cur.execute("UPDATE rec SET status = 0 ORDER BY id DESC LIMIT 1")
-        con.commit()
-
-        # Verify status is change to 0
-        cur.execute("SELECT id FROM rec WHERE status = 1 ORDER BY id DESC LIMIT 1")
-        data = cur.fetchall()
-
-        # Replace all database status with 0 if replace uniquely last ID not working
-        if len(data) != 0:
-            cur.execute("UPDATE rec SET status = 0")
-            con.commit()
-
-        con.close()
+        # Changement status de l'enregistrement
+        self.status = False
 
         # Supprimer le fichier vidéo temporaire
         # if os.path.exists(file_source):
         #    os.remove(file_source)
 
-        return file_source
+        return self.file_source
 
     def status_rec(self):
-        con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
-        cur = con.cursor()
-        cur.execute('''CREATE TABLE IF NOT EXISTS rec(
-                id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-                name TEXT,
-                file TEXT,
-                time INTEGER,
-                status INTEGER
-            )''')
-        con.commit()
-        cur.execute("SELECT id FROM rec WHERE status = 1 ORDER BY id DESC LIMIT 1")
-        data = cur.fetchall()
+        return self.status
 
-        # true = enregistrement en cours / false = pas d'enregistrement en cours
-        if len(data) == 0:
-            rec = 'false'
-        else:
-            rec = 'true'
-            rec_id = (','.join(map(str, next(zip(*data)))))
-
-        try:
-            return rec, rec_id
-        except NameError:
-            return rec
-
-    def info_rec(self, rec_id):
-        con = sqlite3.connect("/simcam/data/bdd/rec_bdd.db")
-        cur = con.cursor()
-        cur.execute("SELECT * FROM rec WHERE id = ?", (rec_id,))
-        res = cur.fetchall()
-        for row in res:
-            rec_id = row[0]
-            rec_name = row[1]
-            rec_file = row[2]
-            rec_time = row[3]
-            if row[4] == 1:
-                rec_status = 'true'
-            else:
-                rec_status = 'false'
-        con.close()
-        return rec_id, rec_name, rec_file, rec_time, rec_status
+    def info_rec(self):
+        return self.pid, self.name, self.file_name, self.file_source, self.time, self.status
 
 
-class Upload():
+class Upload:
     def upload_file(self):
         cmd_upload = '/simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
         script = subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-        script = "True"
+        script = True
         return script
 
 
-class Preview():
+class Preview:
+    def __init__(self):
+        self.pid = None
+
     def run_preview(self):
         cmdbase = 'libcamera-vid -t 0 --rotation 180 --width 1920 --height 1080 --codec h264 --inline --listen -o tcp://0.0.0.0:8888'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
-        pid = os.getpgid(process.pid)
-        f = open('/simcam/data/temp_var/out_preview.ser', "wb")
-        pickler = pickle.Pickler(f, pickle.HIGHEST_PROTOCOL)
-        pickler.dump(pid)
-        f.close()
+        self.pid = os.getpgid(process.pid)
 
-        script = "True"
+        script = True
         return script
 
     def stop_preview(self):
-        f = open('/simcam/data/temp_var/out_preview.ser', "rb")
-        unpickler = pickle.Unpickler(f)
-        pid = unpickler.load()
-        f.close()
-
         try:
-            os.killpg(pid, signal.SIGINT)
+            os.killpg(self.pid, signal.SIGINT)
         except ProcessLookupError:
             pass
 
-        script = "True"
+        script = True
         return script
