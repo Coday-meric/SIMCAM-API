@@ -4,7 +4,7 @@ import signal
 import subprocess
 from pathlib import Path
 import owncloud
-
+from dotenv import load_dotenv
 
 class Rec:
     def __init__(self):
@@ -43,9 +43,11 @@ class Rec:
         return True, self.pid
 
     def unrec_video(self):
-        login = 'Simon'
-        password = 'tchaik0123'
-        url_nextcloud = 'https://cloud.aymeric-mai.fr/'
+        load_dotenv()
+
+        login = os.getenv('NEXTCLOUD_LOGIN')
+        password = os.getenv('NEXTCLOUD_PASSWORD')
+        url_nextcloud = os.getenv('NEXTCLOUD_URL')
         datetime.datetime.now().timestamp()
         timestamp = datetime.datetime.now()
         annee = timestamp.strftime('%Y')
