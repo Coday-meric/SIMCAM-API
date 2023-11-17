@@ -22,13 +22,13 @@ class Rec:
         jour = timestamp.strftime('%d-%m-%y_%Hh%M')
 
         # Création dossier
-        path = Path('/simcam/data/temp/')
+        path = Path('/simcam/data/video/')
         path.mkdir(parents=True, exist_ok=True)
 
         # Nom fichier
         self.name = name
         self.file_name = self.name + '_' + jour + '-quality.mp4'
-        self.file_source = '/simcam/data/temp/' + self.file_name
+        self.file_source = '/simcam/data/video/' + self.file_name
 
         # Démarrage VLC
         cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --bitrate 2500000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
@@ -88,7 +88,7 @@ class Rec:
 
 class Upload:
     def upload_file(self):
-        cmd_upload = '/simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
+        cmd_upload = 'login=' + os.getenv('NEXTCLOUD_LOGIN') + ' password=' + os.getenv('NEXTCLOUD_PASSWORD') + ' bash /simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
         subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
         return True
 
@@ -98,7 +98,7 @@ class Preview:
         self.pid = None
 
     def run_preview(self):
-        cmdbase = 'libcamera-vid -t 0 --rotation 180 --width 1920 --height 1080 --codec h264 --inline --listen -o tcp://0.0.0.0:8888'
+        cmdbase = 'libcamera-vid -t 600000 --rotation 180 --width 1920 --height 1080 --codec h264 --inline --listen -o tcp://0.0.0.0:8888'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
         self.pid = os.getpgid(process.pid)
