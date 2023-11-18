@@ -31,7 +31,7 @@ class Rec:
         self.file_source = '/simcam/data/video/' + self.file_name
 
         # Démarrage VLC
-        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --bitrate 2500000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
+        cmdbase = 'libcamera-vid --nopreview -t 0 --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --profile high --level 4.2 --bitrate 5000000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
         # Stockage du PID
