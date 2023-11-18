@@ -88,8 +88,8 @@ class Rec:
 
 class Upload:
     def upload_file(self):
-        login = os.getenv('NEXTCLOUD_LOGIN')
-        password = os.getenv('NEXTCLOUD_PASSWORD')
+        login = str(os.getenv('NEXTCLOUD_LOGIN'))
+        password = str(os.getenv('NEXTCLOUD_PASSWORD'))
         cmd_upload = 'login=' + login + ' password=' + password + ' bash /simcam/cron/AEVE-REC_Cron.bash >> /var/log/AEVE-REC_Cron.txt'
         subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
         return True
