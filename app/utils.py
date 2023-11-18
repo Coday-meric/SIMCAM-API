@@ -88,6 +88,7 @@ class Rec:
 
 class Upload:
     def upload_file(self):
+        load_dotenv()
         login = str(os.getenv('NEXTCLOUD_LOGIN'))
         password = str(os.getenv('NEXTCLOUD_PASSWORD'))
         print(login)
