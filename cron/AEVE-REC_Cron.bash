@@ -8,7 +8,7 @@ filename="$dir_timestamp/timestamp.txt"
 date_log=$(date '+%d/%m/%Y %r')
 
 #Time for save temp video
-timestamp_save=$((2595600))
+timestamp_save=$((648900))
 
 
 if [ ! -f $filename ]
@@ -63,7 +63,7 @@ do
    #Suppression du temp si la limite est dépassée
    if [ "$timestamp" -lt "$timestamp_sm" ]
    then
-      echo "Video a plus de 30 jours, suppression :" $video
+      echo "Video a plus de une semaine, suppression :" $video
       rm "$dir/$destVideo"
       continue
    fi
