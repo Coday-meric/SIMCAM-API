@@ -91,10 +91,7 @@ class Upload:
         load_dotenv()
         login = str(os.getenv('NEXTCLOUD_LOGIN'))
         password = str(os.getenv('NEXTCLOUD_PASSWORD'))
-        print(login)
-        print(password)
         cmd_upload = 'login="' + login + '" password="' + password + '" bash /simcam/cron/AEVE-REC_Cron.bash >> /simcam/log/AEVE-REC_Cron.txt'
-        print(cmd_upload)
         subprocess.Popen(cmd_upload, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
         return True
 
