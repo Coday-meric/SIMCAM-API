@@ -26,7 +26,7 @@ class Rec:
         path.mkdir(parents=True, exist_ok=True)
 
         # Nom fichier
-        self.name = name
+        self.name = name.replace(" ", "_")
         self.file_name = self.name + '_' + jour + '-quality.mp4'
         self.file_source = '/simcam/data/video/' + self.file_name
 
