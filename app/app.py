@@ -6,12 +6,14 @@ rec = Rec()
 preview = Preview()
 upload = Upload()
 
+
 class RunRecSession(object):
     def on_post(self, req, resp):
         """Handles POST requests"""
         data = json.load(req.stream)
         name = data['name']
-        res = rec.rec_video(name)
+        time_limit = data['time']
+        res = rec.rec_video(name, time_limit)
         if res[0]:
             resp.status = falcon.HTTP_200  # This is the default status
             resp.text = json.dumps({"volunteer name": name})

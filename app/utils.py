@@ -14,8 +14,9 @@ class Rec:
         self.file_name = None
         self.name = None
         self.time = None
+        self.time_limit = 0
 
-    def rec_video(self, name):
+    def rec_video(self, name, time_limit):
         # Déclaration de variable
         self.time = datetime.datetime.now().timestamp()
         timestamp = datetime.datetime.now()
@@ -30,8 +31,11 @@ class Rec:
         self.file_name = self.name + '_' + jour + '-quality.mp4'
         self.file_source = '/simcam/data/video/' + self.file_name
 
+        # Set time limit Rec
+        self.time_limit = time_limit
+
         # Démarrage VLC
-        cmdbase = 'libcamera-vid --rotation 180 --nopreview -t 0 --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --profile high --level 4.2 --bitrate 2500000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
+        cmdbase = 'libcamera-vid --rotation 180 --nopreview -t ' + self.time_limit + ' --codec libav -o ' + self.file_source + ' --framerate 25 --width 1920 --height 1080 --profile high --level 4.2 --bitrate 2500000 -n --libav-audio --audio-source alsa --audio-device default --audio-bitrate 128000'
         process = subprocess.Popen(cmdbase, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True,
                                    preexec_fn=os.setsid)
         # Stockage du PID
