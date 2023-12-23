@@ -14,7 +14,7 @@ class Rec:
         self.file_name = None
         self.name = None
         self.time = None
-        self.time_limit = 0
+        self.time_limit = None
 
     def rec_video(self, name, time_limit):
         # Déclaration de variable
