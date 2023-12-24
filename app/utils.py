@@ -64,7 +64,7 @@ class Rec:
 
         # Use owncloud library for create dir of file mp4
         try:
-            nc = nextcloud_client.Client('https://cloud.aymeric-mai.fr/')
+            nc = nextcloud_client.Client(url_nextcloud)
             nc.login(login, password)
 
             try:
@@ -77,7 +77,6 @@ class Rec:
             except:
                 print("Directory Exist")
 
-            nc.logout()
         except:
             pass
 
