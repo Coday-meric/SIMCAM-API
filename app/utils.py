@@ -3,7 +3,7 @@ import os
 import signal
 import subprocess
 from pathlib import Path
-import owncloud
+import nextcloud_client
 from dotenv import load_dotenv
 
 class Rec:
@@ -64,10 +64,10 @@ class Rec:
 
         # Use owncloud library for create dir of file mp4
         try:
-            oc = owncloud.Client(url_nextcloud)
-            oc.login(login, password)
-            oc.mkdir('Simon/Vidéos-Simon/' + annee + '')
-            oc.mkdir('Simon/Vidéos-Simon/' + annee + '/Semaine-' + semaine + '')
+            nc = nextcloud_client.Client('https://cloud.aymeric-mai.fr/')
+            nc.login(login, password)
+            nc.mkdir('Simon/Vidéos-Simon/' + annee + '')
+            nc.mkdir('Simon/Vidéos-Simon/' + annee + '/Semaine-' + semaine + '')
         except:
             pass
 
