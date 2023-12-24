@@ -66,8 +66,18 @@ class Rec:
         try:
             nc = nextcloud_client.Client('https://cloud.aymeric-mai.fr/')
             nc.login(login, password)
-            nc.mkdir('Simon/Vidéos-Simon/' + annee + '')
-            nc.mkdir('Simon/Vidéos-Simon/' + annee + '/Semaine-' + semaine + '')
+
+            try:
+                nc.mkdir('Simon/Vidéos-Simon/' + annee + '')
+            except:
+                print("Directory Exist")
+
+            try:
+                nc.mkdir('Simon/Vidéos-Simon/' + annee + '/Semaine-' + semaine + '')
+            except:
+                print("Directory Exist")
+
+            nc.logout()
         except:
             pass
 
